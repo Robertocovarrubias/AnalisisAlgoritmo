@@ -1,0 +1,85 @@
+package Mochila;
+
+import java.util.ArrayList;
+
+
+public class MochilaEnteraDinamica{
+    
+    private ArrayList<Articulos> items;
+    private ArrayList<Articulos> itemsSolucion;
+    private double[][] MaxBen;
+    private int W;
+    private int maxBenefit;
+
+    public MochilaEnteraDinamica(ArrayList<Articulos> items, int w) {        
+        this.items = items;
+        this.W = w;
+        construirMatrizBeneficios();
+    }
+
+    private void construirMatrizBeneficios() {
+        // construimos la matriz de beneficios 
+        this.MaxBen = new double[this.items.size()+1][this.W+1];
+        // agregar en la primer columna puros ceros
+        for (int x=0;x <= this.items.size();x++)
+            this.MaxBen[x][0] = 0;
+        // agregar en la primer fila puros ceros
+        
+        for (int x=0;x <= this.W;x++)
+            this.MaxBen[0][x] = 0;      
+    }    
+        public void buscarSolucion(){
+        
+               // calculamos la matriz de beneficios
+       for (int i=1;i <= this.items.size();i++)
+           for(int w=0; w<= this.W;w++){
+           // verificamos si el item puede ser parte de la solucion
+               if  (this.items.get(i-1).getPeso()<= w){               
+                   if ((this.items.get(i-1).getValor()+
+                           this.MaxBen[i-1][w-this.items.get(i-1).getPeso()])
+                           >this.MaxBen[i-1][w]){
+                            this.MaxBen[i][w] = this.items.get(i-1).getValor()+
+                               this.MaxBen[i-1][w-this.items.get(i-1).getPeso()];
+                       
+                   }else{                   
+                        this.MaxBen[i][w] = this.MaxBen[i-1][w];              
+                   }               
+               }else{
+               this.MaxBen[i][w] = this.MaxBen[i-1][w];
+               System.out.print(this.MaxBen[i][w]+".");
+               }
+           System.out.println();
+           }
+       this.maxBenefit = (int)this.MaxBen[items.size()][W];
+       this.itemsSolucion = new ArrayList<>();
+       // calcular los elementos utilizados para W     
+       int i = this.items.size();
+       int j = this.W;
+       while (i > 0 && j > 0){
+           double val = this.MaxBen[i][j];
+          if( val != this.MaxBen[i-1][j]){
+              this.itemsSolucion.add(this.items.get(i-1));
+              // imprimir el articulo
+              String aux =this.items.get(i-1).toString();
+              System.out.println(aux);
+              i--;
+              j = j - this.items.get(i).getPeso();
+          } else {
+            i--;
+       } }             
+        }
+    public static void main(String args[]){
+        ArrayList<Articulos> articulos = new ArrayList<>(); 
+        articulos.add(new Articulos(10,1));
+        articulos.add(new Articulos(13,2));
+        articulos.add(new Articulos(50,7));
+        articulos.add(new Articulos(80,5));
+        articulos.add(new Articulos(35,3));
+        articulos.add(new Articulos(47,1));
+        articulos.add(new Articulos(8,2));
+        articulos.add(new Articulos(20,8));
+        
+        MochilaEnteraDinamica md= new MochilaEnteraDinamica(articulos,10); 
+        md.buscarSolucion();
+    }   
+}
